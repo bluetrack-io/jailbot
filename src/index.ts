@@ -4,11 +4,12 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Knex from 'knex';
+import * as Bluebird from 'bluebird';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
 import config from './config';
 import { getInmates } from './utils';
 import { InmateDatastoreI } from './interfaces';
-import { MemoryDatastore, KnexDatastore } from './entities';
+import { KnexDatastore } from './entities';
 
 // Insure the data dir exists
 if(!Fs.existsSync(config.data_dir)){
@@ -33,10 +34,21 @@ async function main(datastore:InmateDatastoreI){
     console.log('No inmates found');
     return;
   }
-  await datastore.saveRecord(inmates[0]);
-  const storedRecords = await datastore.getRecords();
-  const { mugshotpath, ...record } = storedRecords[0];
-  console.log(record)
+  console.log('Fetched', inmates.length, 'records');
+  let savedRecords = 0;
+  let errorRecords = 0;
+  await Bluebird.mapSeries(inmates, async (inmate) => {
+    try {
+      await datastore.saveRecord(inmate)
+      savedRecords++;
+    }
+    catch(err){
+      console.error('Error saving record:', err);
+      errorRecords++;
+    }
+  })
+  console.log('Saved', savedRecords, 'records');
+  console.log('Failed saving', errorRecords, 'records');
 }
 
 Promise.resolve()
