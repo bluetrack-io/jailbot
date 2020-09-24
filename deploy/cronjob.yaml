@@ -1,0 +1,25 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: denton-jailbot
+spec:
+  schedule: "0 * * * *" # Run every hour
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: jailbot
+            image: mwthink/denton-jailbot:latest
+            imagePullPolicy: Always
+            volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: jailbot_data
+          
+          volumes:
+          - name: data
+            persistentVolumeClaim:
+              claimName: denton-jailbot-data
+          

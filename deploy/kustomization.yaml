@@ -1,0 +1,7 @@
+commonLabels:
+  app: jailbot
+  app.kubernetes.io/name: denton-jailbot
+
+resources:
+- cronjob.yaml
+- pvc.yaml
