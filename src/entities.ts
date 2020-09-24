@@ -1,3 +1,5 @@
+import * as Knex from 'knex';
+import { v4 as uuid4 } from 'uuid';
 import { InmateDatastoreI } from './interfaces';
 import { InmateRecord } from './types';
 
@@ -13,5 +15,23 @@ export class MemoryDatastore implements InmateDatastoreI {
 
   async getRecords(){
     return this.recordList;
+  }
+}
+
+/** Datastore provider that utilizes knex for a backend */
+export class KnexDatastore implements InmateDatastoreI {
+  private readonly knex: Knex;
+  private readonly runtime_batch: string;
+  constructor(knex:Knex){
+    this.knex = knex;
+    this.runtime_batch = uuid4();
+  }
+
+  async saveRecord(record:InmateRecord){
+    await this.knex('records').insert({...record, runtime_batch: this.runtime_batch});
+  }
+
+  async getRecords(){
+    return this.knex('records').select();
   }
 }

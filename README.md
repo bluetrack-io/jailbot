@@ -17,3 +17,9 @@ If you want to build and run the image (i.e. During development):
 ```sh
 docker run --rm $(docker build -q .)
 ```
+
+The container will use a volume at `/data` (by default) for persistence.
+
+## Configuration
+You can configure some runtime settings with environment variables
+- `DATA_DIR` - Where files will be saved
