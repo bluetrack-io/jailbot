@@ -1,5 +1,6 @@
 # Persistent files
 /data/
+*.sqlite
 
 # Logs
 logs
