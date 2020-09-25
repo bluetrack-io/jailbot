@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import { v4 as uuid4 } from 'uuid';
-import { InmateDatastoreI } from './interfaces';
-import { InmateRecord } from './types';
+import { InmateDatastoreI } from '../interfaces';
+import { InmateRecord } from '../types';
 
 /** An in-memory (non-persistent) datastore provider */
 export class MemoryDatastore implements InmateDatastoreI {

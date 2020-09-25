@@ -1,4 +1,4 @@
-import { InmateRecord } from './types';
+import { InmateRecord } from '../types';
 
 export interface InmateDatastoreI {
   saveRecord(record:InmateRecord): Promise<void>;
