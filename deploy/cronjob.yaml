@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: denton-jailbot
 spec:
-  schedule: "0 * * * *" # Run every hour
+  schedule: "*/30 * * * *" # Run every half hour
   jobTemplate:
     spec:
       template:
