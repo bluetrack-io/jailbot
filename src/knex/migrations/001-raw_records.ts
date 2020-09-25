@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 
 export async function up(knex:Knex){
-  await knex.schema.createTable('records', table => {
+  await knex.schema.createTable('raw_records', table => {
     table.string('datetimebooked');
     table.string('name').notNullable();
     table.string('mugshotpath');
@@ -20,5 +20,5 @@ export async function up(knex:Knex){
 }
 
 export async function down(knex:Knex){
-  await knex.schema.dropTableIfExists('records');
+  await knex.schema.dropTableIfExists('raw_records');
 }

@@ -28,10 +28,10 @@ export class KnexDatastore implements InmateDatastoreI {
   }
 
   async saveRecord(record:InmateRecord){
-    await this.knex('records').insert({...record, runtime_batch: this.runtime_batch});
+    await this.knex('raw_records').insert({...record, runtime_batch: this.runtime_batch});
   }
 
   async getRecords(){
-    return this.knex('records').select();
+    return this.knex('raw_records').select();
   }
 }
