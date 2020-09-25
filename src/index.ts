@@ -58,7 +58,9 @@ Promise.resolve()
     app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
       if(config.batch_interval_seconds > 0){
-        setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
+        runBatch(rawRecords).then(() => (
+          setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
+        ))
       }
     })
   }
