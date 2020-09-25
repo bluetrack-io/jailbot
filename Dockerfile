@@ -8,9 +8,11 @@ COPY src ./src/
 # Compile and cleanup
 RUN npx tsc && yarn install --production && rm -rf src tsconfig.json
 
+RUN mkdir -p /data && chown -R node:node /data
 VOLUME /data
-
-ENV DATA_DIR /data
+USER node
 
 ENV NODE_ENV production
+ENV DATA_DIR /data
+
 CMD ["node", "dist"]

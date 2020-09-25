@@ -19,6 +19,7 @@ docker run --rm $(docker build -q .)
 ```
 
 The container will use a volume at `/data` (by default) for persistence.
+The volume owner should be UID 1000.
 
 ## Configuration
 You can configure some runtime settings with environment variables
