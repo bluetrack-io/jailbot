@@ -3,8 +3,14 @@ import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { RawRecordProviderI } from './interfaces';
 
-export default function ExpApp(rawRecords:RawRecordProviderI): Express.Application {
+export default function ExpApp(sqliteFilepath:string, rawRecords:RawRecordProviderI): Express.Application {
   const app = Express();
+
+  app.get('/favicon.ico', ({}, res) => res.status(404).end());
+
+  app.get('/download-database', ({}, res) => {
+    return res.download(sqliteFilepath, 'jailbot.sqlite');
+  })
   
   app.get('/*', async (req, res, next) => {
     const batches = await rawRecords.getBatches();

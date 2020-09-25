@@ -53,7 +53,7 @@ Promise.resolve()
 
   if(config.http.enabled){
     console.log('Starting HTTP server');
-    const app = ExpApp(rawRecords);
+    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), rawRecords);
     app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
       if(config.batch_interval_seconds > 0){
