@@ -1,6 +1,6 @@
 import * as Knex from 'knex';
 import { RawRecordProviderI } from '../interfaces';
-import { RawInmateRecord } from '../types';
+import { RawInmateRecord, StoredInmateRecord } from '../types';
 
 export class KnexRawRecordProvider implements RawRecordProviderI {
   private readonly knex: Knex;
@@ -20,7 +20,8 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
   }
 
   async getBatches(){
-    const batches = await this.knex(this.table_name).distinct('runtime_batch');
+    const batches = await this.knex(this.table_name).distinct('runtime_batch')
+      .orderBy('saved_at','desc')
     return batches.map(b => ({
       batch_id: b['runtime_batch']
     }))

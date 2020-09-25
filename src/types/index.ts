@@ -19,3 +19,8 @@ export type RawInmateRecord = {
   charges: string;
   detainers: string;
 }
+
+export type StoredInmateRecord = RawInmateRecord & {
+  runtime_batch: string;
+  saved_at: string;
+}

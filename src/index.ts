@@ -29,6 +29,13 @@ const knex = Knex({
   },
 })
 
+const runBatch = async (rawRecords:RawRecordProviderI) => {
+  const batchId = await saveCurrentInmateRecords(rawRecords);
+  console.log('Finished batch', batchId);
+  const batchRecords = await rawRecords.getRecordsByBatch(batchId);
+  console.log('Saved', batchRecords.length, 'records');
+}
+
 /** Do shutdown logic on the app */
 const shutdown = async () => {
   await knex.destroy();
@@ -43,16 +50,19 @@ Promise.resolve()
 })
 .then(async () => {
   const rawRecords: RawRecordProviderI = new KnexRawRecordProvider(knex);
-  const batchId = await saveCurrentInmateRecords(rawRecords);
-  console.log('Finished batch', batchId);
-  const batchRecords = await rawRecords.getRecordsByBatch(batchId);
-  console.log('Saved', batchRecords.length, 'records');
 
   if(config.http.enabled){
-    const app = ExpApp();
+    console.log('Starting HTTP server');
+    const app = ExpApp(rawRecords);
     app.listen(config.http.port, () => {
-      console.log('Server listening on', config.http.port)
+      console.log('Server listening on', config.http.port);
+      if(config.batch_interval_seconds > 0){
+        setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
+      }
     })
   }
+  else {
+    await runBatch(rawRecords);
+    return shutdown();
+  }
 })
-.then(() => shutdown())

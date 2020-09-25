@@ -13,6 +13,9 @@ spec:
           - name: jailbot
             image: mwthink/denton-jailbot:latest
             imagePullPolicy: Always
+            env:
+            - name: HTTP_ENABLED
+              value: "false"
             volumeMounts:
             - name: data
               mountPath: /data

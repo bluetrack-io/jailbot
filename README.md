@@ -24,3 +24,8 @@ The volume owner should be UID 1000.
 ## Configuration
 You can configure some runtime settings with environment variables
 - `DATA_DIR` - Where files will be saved
+- `HTTP_ENABLED` - Set to `false` to disable the web server
+- `HTTP_PORT` - The port the webserver listens on (default: `3000`)
+- `BATCH_INTERVAL_SECONDS` - How often to run the batch job in seconds (default: `300`)
+  - Only respected if webserver is enabled
+  - Set to `0` to disable
