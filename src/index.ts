@@ -5,6 +5,7 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Knex from 'knex';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
+import ExpApp from './ExpApp';
 import config from './config';
 import { RawRecordProviderI } from './interfaces';
 import { saveCurrentInmateRecords } from './utils';
@@ -46,5 +47,12 @@ Promise.resolve()
   console.log('Finished batch', batchId);
   const batchRecords = await rawRecords.getRecordsByBatch(batchId);
   console.log('Saved', batchRecords.length, 'records');
+
+  if(config.http.enabled){
+    const app = ExpApp();
+    app.listen(config.http.port, () => {
+      console.log('Server listening on', config.http.port)
+    })
+  }
 })
 .then(() => shutdown())
