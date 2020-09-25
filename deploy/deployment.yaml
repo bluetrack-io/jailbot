@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: denton-jailbot
+spec:
+  replicas: 1
+  template:
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: jailbot
+        image: mwthink/denton-jailbot:latest
+        imagePullPolicy: Always
+        env:
+        - name: HTTP_ENABLED
+          value: "true"
+        ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          subPath: jailbot_data
+      
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: denton-jailbot-data
