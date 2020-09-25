@@ -39,6 +39,7 @@ const runBatch = async (rawRecords:RawRecordProviderI) => {
 /** Do shutdown logic on the app */
 const shutdown = async () => {
   await knex.destroy();
+  process.exit();
 }
 
 // Begin main app execution
@@ -65,4 +66,11 @@ Promise.resolve()
     await runBatch(rawRecords);
     return shutdown();
   }
+})
+.then(() => {
+  const termSignals = ['SIGTERM','SIGINT'];
+  termSignals.forEach(sig => process.on(sig, () => {
+    console.log('Received', sig);
+    return shutdown();
+  }))
 })
