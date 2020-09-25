@@ -4,6 +4,7 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Knex from 'knex';
+import { Server } from 'http';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
 import ExpApp from './ExpApp';
 import config from './config';
@@ -37,7 +38,10 @@ const runBatch = async (rawRecords:RawRecordProviderI) => {
 }
 
 /** Do shutdown logic on the app */
-const shutdown = async () => {
+const shutdown = async (server?:Server) => {
+  if(server && typeof server.close === 'function'){
+    await (new Promise(resolve=>server.close(()=>resolve())))
+  }
   await knex.destroy();
   process.exit();
 }
@@ -55,7 +59,7 @@ Promise.resolve()
   if(config.http.enabled){
     console.log('Starting HTTP server');
     const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), rawRecords);
-    app.listen(config.http.port, () => {
+    const server = app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
       if(config.batch_interval_seconds > 0){
         runBatch(rawRecords).then(() => (
@@ -63,16 +67,17 @@ Promise.resolve()
         ))
       }
     })
+    return server;
   }
   else {
     await runBatch(rawRecords);
     return shutdown();
   }
 })
-.then(() => {
+.then((server) => {
   const termSignals = ['SIGTERM','SIGINT'];
   termSignals.forEach(sig => process.on(sig, () => {
     console.log('Received', sig);
-    return shutdown();
+    return shutdown(server);
   }))
 })
