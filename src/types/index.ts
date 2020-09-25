@@ -2,7 +2,7 @@
 export type DollarString = string;
 
 /** The record for a single inmate returned by the jailview API */
-export type InmateRecord = {
+export type RawInmateRecord = {
   /** Booking time in format of "MM/DD/YYYY HH:MM" */
   datetimebooked: string;
   /** Name in format of "$first, $last" */

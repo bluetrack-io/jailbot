@@ -1,11 +1,11 @@
 import Axios from 'axios';
-import { InmateRecord } from './types';
+import { RawInmateRecord } from './types';
 
 const jailClient = Axios.create({
   baseURL: 'https://athena.dentonpolice.com/jailview/JailView.aspx'
 });
 
-export const getInmates = (body:any={}): Promise<InmateRecord[]> => {
+export const getInmates = (body:any={}): Promise<RawInmateRecord[]> => {
   return jailClient.post('/GetInmates', body)
   .then(r => {
     const jsonString = r.data['d'];

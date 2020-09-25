@@ -1,15 +1,15 @@
 import * as Knex from 'knex';
 import { v4 as uuid4 } from 'uuid';
 import { InmateDatastoreI } from '../interfaces';
-import { InmateRecord } from '../types';
+import { RawInmateRecord } from '../types';
 
 /** An in-memory (non-persistent) datastore provider */
 export class MemoryDatastore implements InmateDatastoreI {
-  private readonly recordList: InmateRecord[];
+  private readonly recordList: RawInmateRecord[];
   constructor(){
     this.recordList = [];
   }
-  async saveRecord(record:InmateRecord){
+  async saveRecord(record:RawInmateRecord){
     this.recordList.push(record);
   }
 
@@ -27,7 +27,7 @@ export class KnexDatastore implements InmateDatastoreI {
     this.runtime_batch = uuid4();
   }
 
-  async saveRecord(record:InmateRecord){
+  async saveRecord(record:RawInmateRecord){
     await this.knex('raw_records').insert({...record, runtime_batch: this.runtime_batch});
   }
 
