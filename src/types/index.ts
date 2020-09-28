@@ -7,7 +7,7 @@ export type RawInmateRecord = {
   datetimebooked: string;
   /** Name in format of "$first, $last" */
   name: string;
-  /** String of html image tag with b64 encoded image */
+  /** String of html image tag with b64 encoded image or hash */
   mugshotpath: string;
   /** Total outstanding amount (bonds + detainers) */
   amount: DollarString;
@@ -21,6 +21,9 @@ export type RawInmateRecord = {
 }
 
 export type StoredInmateRecord = RawInmateRecord & {
-  runtime_batch: string;
+  id: string;
+  batch_id: string;
   saved_at: string;
+  /** The hash of the stored mugshot */
+  mugshotpath: string;
 }

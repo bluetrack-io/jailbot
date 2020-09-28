@@ -2,6 +2,9 @@
 /data/
 *.sqlite
 
+# Scratch files
+/_*
+
 # Logs
 logs
 *.log
