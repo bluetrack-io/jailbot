@@ -6,6 +6,7 @@ import * as Path from 'path';
 import * as Knex from 'knex';
 import { Server } from 'http';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
+import * as Prom from 'prom-client';
 import ExpApp from './ExpApp';
 import config from './config';
 import { RawRecordProviderI } from './interfaces';
@@ -58,7 +59,8 @@ Promise.resolve()
 
   if(config.http.enabled){
     console.log('Starting HTTP server');
-    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), rawRecords);
+    Prom.collectDefaultMetrics()
+    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords);
     const server = app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
       if(config.batch_interval_seconds > 0){
