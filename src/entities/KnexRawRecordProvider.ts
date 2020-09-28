@@ -34,6 +34,12 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
   }
 
   async saveRecords(records:RawInmateRecord[], batch_id:string){
+    const batchSaved = Boolean((await this.knex('batches').select('id').where('id', batch_id)).length > 0)
+    if(!batchSaved){
+      await this.knex('batches').insert({
+        id: batch_id,
+      })
+    }
     await Bluebird.mapSeries(records, r => this.saveRecord(r, batch_id))
   }
   
@@ -43,10 +49,9 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
   }
 
   async getBatches(){
-    const batches = await this.knex(this.table_name).distinct('batch_id')
-      .orderBy('saved_at','desc')
+    const batches = await this.knex('batches').orderBy('saved_at','desc')
     return batches.map(b => ({
-      batch_id: b['batch_id']
+      batch_id: b['id']
     }))
   }
 }
