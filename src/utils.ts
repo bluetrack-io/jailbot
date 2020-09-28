@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import * as Crypto from 'crypto';
 import { v4 as uuid4 } from 'uuid';
 import { RawInmateRecord } from './types';
 import { RawRecordProviderI } from './interfaces';
@@ -35,3 +36,13 @@ export const saveCurrentInmateRecords = async (recordProvider:RawRecordProviderI
   await recordProvider.saveRecords(records, batchId);
   return batchId;
 }
+
+/**
+ * Given a string, output the SHA256 hash of it
+ */
+export const stringSha256Sum = (input:string): string => {
+  return Crypto.createHash('sha256')
+  .update(input)
+  .digest('hex')
+}
+
