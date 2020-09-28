@@ -51,7 +51,8 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
   async getBatches(){
     const batches = await this.knex('batches').orderBy('saved_at','desc')
     return batches.map(b => ({
-      batch_id: b['id']
+      batch_id: b['id'],
+      time: new Date(b['saved_at'])
     }))
   }
 }

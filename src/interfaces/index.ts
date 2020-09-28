@@ -7,5 +7,5 @@ export interface RawRecordProviderI {
    * Returns a list of objects containing information about batch groups
    * List will be sorted from newest to oldest
    */
-  getBatches(): Promise<{batch_id:string}[]>
+  getBatches(): Promise<{batch_id:string,time:Date}[]>
 }
