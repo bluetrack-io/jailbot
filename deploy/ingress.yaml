@@ -2,13 +2,16 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: denton-jailbot
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  annotations: {}
 spec:
   rules:
-  - http:
+  - host: denton-jailbot.bluetrack.io
+    http:
       paths:
-      - path: /jailbot(/|$)(.*)
+      - path: /
         backend:
           serviceName: denton-jailbot
           servicePort: http
+  tls:
+  - hosts: ["denton-jailbot.bluetrack.io"]
+    secretName: denton-jailbot-tls
