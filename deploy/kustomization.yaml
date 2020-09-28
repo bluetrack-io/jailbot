@@ -6,4 +6,5 @@ resources:
 - cronjob.yaml
 - pvc.yaml
 - deployment.yaml
+- ingress.yaml
 - service.yaml
