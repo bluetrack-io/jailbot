@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: denton-jailbot
+  name: jailbot
   annotations: {}
 spec:
   rules:
-  - host: denton-jailbot.bluetrack.io
+  - host: jailbot.bluetrack.io
     http:
       paths:
       - path: /
         backend:
-          serviceName: denton-jailbot
+          serviceName: jailbot
           servicePort: http
   tls:
-  - hosts: ["denton-jailbot.bluetrack.io"]
-    secretName: denton-jailbot-tls
+  - hosts: ["jailbot.bluetrack.io"]
+    secretName: jailbot-tls

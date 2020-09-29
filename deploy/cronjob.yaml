@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: denton-jailbot
+  name: jailbot-job
 spec:
   suspend: true
   schedule: "*/30 * * * *" # Run every half hour
@@ -12,7 +12,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: jailbot
-            image: mwthink/denton-jailbot:latest
+            image: bluetrack/jailbot:latest
             imagePullPolicy: Always
             env:
             - name: HTTP_ENABLED
@@ -25,5 +25,5 @@ spec:
           volumes:
           - name: data
             persistentVolumeClaim:
-              claimName: denton-jailbot-data
+              claimName: jailbot-data
           
