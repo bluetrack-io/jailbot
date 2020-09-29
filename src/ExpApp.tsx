@@ -1,3 +1,4 @@
+import config from './config';
 import { Registry } from 'prom-client';
 import * as Express from 'express';
 import * as Knex from 'knex';
@@ -6,7 +7,7 @@ import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import * as Cheerio from 'cheerio';
-import { InmateCard } from './ui';
+import { AckeeEmbed, InmateCard } from './ui';
 import { RawRecordProviderI } from './interfaces';
 
 export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords:RawRecordProviderI, knex:Knex): Express.Application {
@@ -163,9 +164,6 @@ const templateBody = renderToStaticMarkup(
   </Container>
 )
 
-import config from './config';
-const trackingHtml = `<script async src="${config.ackee.endpoint}/tracker.js" data-ackee-server="${config.ackee.endpoint}" data-ackee-domain-id="${config.ackee.domain_id}"></script>`;
-
 const pageTemplate = `
 <!DOCTYPE html>
 <html>
@@ -173,7 +171,17 @@ const pageTemplate = `
   <title>Jailbot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-  ${ config.ackee.endpoint && config.ackee.domain_id ? trackingHtml : '' }
+  ${renderToStaticMarkup(<AckeeEmbed {...config.ackee}/>)}
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-179306626-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-179306626-1');
+  </script>
+
 </head>
 <body>
   ${templateBody}
