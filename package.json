@@ -1,8 +1,8 @@
 {
-  "name": "denton-jailbot",
+  "name": "jailbot",
   "version": "0.1.0",
   "main": "index.js",
-  "repository": "git@github.com:mwthink/denton-jailbot.git",
+  "repository": "git@github.com:bluetrack-io/jailbot.git",
   "author": "Marshall Williams <marshall@mwthink.net>",
   "license": "MIT",
   "scripts": {
