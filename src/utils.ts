@@ -8,7 +8,7 @@ import { RawRecordProviderI } from './interfaces';
 const jailClient = Axios.create({
   baseURL: 'https://athena.dentonpolice.com/jailview/JailView.aspx',
   httpsAgent: new HttpsAgent({
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
   })
 });
 
