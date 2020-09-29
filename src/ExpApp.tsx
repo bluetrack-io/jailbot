@@ -39,8 +39,29 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
                 <td><a href={`/batch/${b.batch_id}`}>{b.time.toLocaleString()}</a></td>
               </tr>
             ))}
+            { batches.length > 0 ? null : (
+              <div>No records found</div>
+            ) }
           </tbody>
         </table>
+      </div>
+    )
+    return res.send(bodyHtml);
+  })
+
+  app.get('/batch/:batchId', async (req, res) => {
+    const batchId = req.params['batchId'];
+    const batchRecords = await rawRecords.getRecordsByBatch(batchId);
+    const bodyHtml = renderToStaticMarkup(
+      <div>
+        {batchRecords.map(r => (
+          <div key={r.id}>
+            <pre>{JSON.stringify(r, null, 2)}</pre>
+          </div>
+        ))}
+        { batchRecords.length > 0 ? null : (
+          <div>No records found</div>
+        ) }
       </div>
     )
     return res.send(bodyHtml);
