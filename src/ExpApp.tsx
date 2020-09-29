@@ -34,7 +34,8 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
     const imgBuff = Buffer.from(b64Data, 'base64');
     return res.writeHead(200, {
       'Content-Type': mimeType,
-      'Content-Length': imgBuff.length
+      'Content-Length': imgBuff.length,
+      'Cache-control': 'public, max-age=31536000, immutable', // The content is dependent on the hash, so an eternal cache is fine
     })
     .end(imgBuff);
   })
