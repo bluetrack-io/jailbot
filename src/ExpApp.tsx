@@ -81,6 +81,7 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
     const batchRecords = await rawRecords.getRecordsByBatch(batchId);
     const bodyHtml = renderToStaticMarkup(
       <Row>
+        <Col xs={12}>Inmates Booked: {batchRecords.length}</Col>
         {batchRecords.map(r => (
           <Col key={r.id} xs={12}>
             <InmateCard record={r}/>
@@ -96,16 +97,11 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
   
   app.get('/*', async (req, res, next) => {
     const batches = await rawRecords.getBatches(10);
-    const mostRecentBatch = await rawRecords.getRecordsByBatch(batches[0].batch_id);
     const bodyHtml = renderToStaticMarkup(
       <div>
-        Jailbot
-        <hr/>
-        Last updated: {mostRecentBatch[0].saved_at}
+        Last updated: {batches[0].time.toLocaleString()}
         <br/>
-        Last inmate count: {mostRecentBatch.length}
-        <br/><br/>
-        <a href="/batch-list">Batch List</a>
+        <a href={`/batch/${batches[0].batch_id}`}>Most Recent Batch</a>
       </div>
     )
     return res.send(pageTemplate.replace('{{{body}}}', bodyHtml));
@@ -114,15 +110,38 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
   return app;
 }
 
+import { Navbar, NavbarBrand, Nav, NavItem, NavLink } from 'reactstrap';
+
+const templateBody = renderToStaticMarkup(
+  <Container>
+    <Row>
+      <Col>
+        <Navbar light color="light" expand="md">
+          <NavbarBrand href="/">Jailbot</NavbarBrand>
+          <Nav navbar>
+            <NavItem>
+              <NavLink href="/batch-list">Batch List</NavLink>
+            </NavItem>
+          </Nav>
+        </Navbar>
+      </Col>
+    </Row>
+    <Row>
+      {'{{{body}}}'}
+    </Row>
+  </Container>
+)
+
 const pageTemplate = `
 <!DOCTYPE html>
 <html>
 <head>
   <title>Jailbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
 <body>
-{{{body}}}
+  ${templateBody}
 </body>
 </html>
 `.trim();
