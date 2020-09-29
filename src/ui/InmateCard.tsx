@@ -16,12 +16,12 @@ export const InmateCard: React.FunctionComponent<InmateCardProps> = props => {
   return (
     <Card>
       <CardBody>
-        <CardTitle>{r.name}</CardTitle>
-        <CardSubtitle>Booked @ {r.datetimebooked}</CardSubtitle>
+        <CardTitle style={{fontWeight:'bold'}}>{r.name}</CardTitle>
+        <CardSubtitle>Booked @ <span style={{fontStyle:'italic'}}>{r.datetimebooked}</span></CardSubtitle>
         <CardText>
           <Row>
-            <Col style={{display:'none'}} xs={12} sm={2}>
-              <img src="#"/>
+            <Col xs={12} sm={2}>
+              <img style={{maxWidth:'100%'}} src={`/mugshot/${r.mugshotpath}`} alt="Mugshot"/>
             </Col>
             <Col xs={12} sm={10}>
               <ul>

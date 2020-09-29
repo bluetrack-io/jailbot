@@ -10,4 +10,6 @@ export interface RawRecordProviderI {
    * Can optionally set a limit and offset
    */
   getBatches(limit?:number, offset?:number): Promise<BatchMetadata[]>
+  /** Given the hash of a mugshot, return it's data */
+  getMugshotData(hash:string): Promise<string>;
 }

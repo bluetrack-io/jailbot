@@ -46,7 +46,19 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
   
   async getRecordsByBatch(batch_id:string): Promise<StoredInmateRecord[]> {
     return this.knex(this.table_name)
-      .select().where('batch_id', batch_id)
+      .select().where('batch_id', batch_id);
+  }
+
+  async getMugshotData(hash:string): Promise<string> {
+    return this.knex('mugshot_hashes')
+      .select('data').first()
+      .where('hash', hash)
+      .then(row => {
+        if(!row){
+          return null;
+        }
+        return row['data'];
+      })
   }
 
   async getBatches(limit?:number, offset?:number): Promise<BatchMetadata[]> {

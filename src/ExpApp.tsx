@@ -4,6 +4,7 @@ import * as Querystring from 'querystring';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
+import * as Cheerio from 'cheerio';
 import { InmateCard } from './ui';
 import { RawRecordProviderI } from './interfaces';
 
@@ -13,6 +14,30 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
   app.get('/favicon.ico', ({}, res) => res.status(404).end());
 
   app.get('/metrics', ({}, res) => res.contentType('text/plain').send(prom.metrics()))
+
+  app.get('/mugshot/:mugshotHash', async (req, res) => {
+    const mugshotHash = req.params['mugshotHash'];
+    const mugData = await rawRecords.getMugshotData(mugshotHash);
+    if(!mugData){
+      return res.status(404).end();
+    }
+    const imgTag = Cheerio.load(mugData);
+    const imgSrc:string = imgTag('img').prop('src');
+    // Check if src is a data URI
+    if(typeof imgSrc !== 'string' || imgSrc.indexOf('data:') !== 0){
+      // If not, return nothing
+      return res.status(404).end();
+    }
+    const splitData = imgSrc.substr(5).split(';');
+    const mimeType = splitData[0];
+    const b64Data = splitData[1].substr(7); // Remove "base64," prefix 
+    const imgBuff = Buffer.from(b64Data, 'base64');
+    return res.writeHead(200, {
+      'Content-Type': mimeType,
+      'Content-Length': imgBuff.length
+    })
+    .end(imgBuff);
+  })
 
   app.get('/download-database', ({}, res) => {
     return res.download(sqliteFilepath, 'jailbot.sqlite');
