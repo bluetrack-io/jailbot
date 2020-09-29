@@ -63,7 +63,7 @@ Promise.resolve()
     const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords);
     const server = app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
-      if(config.batch_interval_seconds > 0){
+      if(!config.dev_mode && config.batch_interval_seconds > 0){
         runBatch(rawRecords).then(() => (
           setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
         ))
