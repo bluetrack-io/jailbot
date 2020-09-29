@@ -1,6 +1,3 @@
-// This is a terrible workaround because the jail server has funky TLS handling
-(process.env as any)["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-
 import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Knex from 'knex';

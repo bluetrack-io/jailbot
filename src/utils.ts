@@ -1,11 +1,15 @@
 import Axios from 'axios';
 import * as Crypto from 'crypto';
+import { Agent as HttpsAgent } from 'https';
 import { v4 as uuid4 } from 'uuid';
 import { RawInmateRecord } from './types';
 import { RawRecordProviderI } from './interfaces';
 
 const jailClient = Axios.create({
-  baseURL: 'https://athena.dentonpolice.com/jailview/JailView.aspx'
+  baseURL: 'https://athena.dentonpolice.com/jailview/JailView.aspx',
+  httpsAgent: new HttpsAgent({
+    rejectUnauthorized: true,
+  })
 });
 
 export const getInmates = (body:any={}): Promise<RawInmateRecord[]> => {
