@@ -77,6 +77,8 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
         Last updated: {mostRecentBatch[0].saved_at}
         <br/>
         Last inmate count: {mostRecentBatch.length}
+        <br/><br/>
+        <a href="/batch-list">Batch List</a>
       </div>
     )
     return res.send(bodyHtml);
