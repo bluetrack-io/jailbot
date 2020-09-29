@@ -1,3 +1,9 @@
+/** Describes an instance of a batch execution */
+export type BatchMetadata = {
+  batch_id: string;
+  time: Date;
+};
+
 /** Dollar amount as a string, with symbol, commas, and zero-padded cents */
 export type DollarString = string;
 

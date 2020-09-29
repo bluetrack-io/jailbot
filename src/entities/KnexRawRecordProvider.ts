@@ -1,9 +1,10 @@
 import * as Knex from 'knex';
 import { RawRecordProviderI } from '../interfaces';
-import { RawInmateRecord, StoredInmateRecord } from '../types';
+import { BatchMetadata, RawInmateRecord, StoredInmateRecord } from '../types';
 import { v4 as uuid4 } from 'uuid';
 import { stringSha256Sum } from '../utils';
 import * as Bluebird from 'bluebird';
+import { off } from 'process';
 
 export class KnexRawRecordProvider implements RawRecordProviderI {
   private readonly knex: Knex;
@@ -43,13 +44,20 @@ export class KnexRawRecordProvider implements RawRecordProviderI {
     await Bluebird.mapSeries(records, r => this.saveRecord(r, batch_id))
   }
   
-  async getRecordsByBatch(batch_id:string){
+  async getRecordsByBatch(batch_id:string): Promise<StoredInmateRecord[]> {
     return this.knex(this.table_name)
       .select().where('batch_id', batch_id)
   }
 
-  async getBatches(){
-    const batches = await this.knex('batches').orderBy('saved_at','desc')
+  async getBatches(limit?:number, offset?:number): Promise<BatchMetadata[]> {
+    const batchQuery = this.knex('batches').orderBy('saved_at','desc');
+    if(limit){
+      batchQuery.limit(limit);
+    }
+    if(offset){
+      batchQuery.offset(offset);
+    }
+    const batches = await batchQuery;
     return batches.map(b => ({
       batch_id: b['id'],
       time: new Date(b['saved_at'])
