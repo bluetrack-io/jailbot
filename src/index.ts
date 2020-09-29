@@ -60,7 +60,7 @@ Promise.resolve()
   if(config.http.enabled){
     console.log('Starting HTTP server');
     Prom.collectDefaultMetrics()
-    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords);
+    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords, knex);
     const server = app.listen(config.http.port, () => {
       console.log('Server listening on', config.http.port);
       if(!config.dev_mode && config.batch_interval_seconds > 0){

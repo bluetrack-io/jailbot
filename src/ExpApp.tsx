@@ -1,5 +1,6 @@
 import { Registry } from 'prom-client';
 import * as Express from 'express';
+import * as Knex from 'knex';
 import * as Querystring from 'querystring';
 import * as React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -8,7 +9,7 @@ import * as Cheerio from 'cheerio';
 import { InmateCard } from './ui';
 import { RawRecordProviderI } from './interfaces';
 
-export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords:RawRecordProviderI): Express.Application {
+export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords:RawRecordProviderI, knex:Knex): Express.Application {
   const app = Express();
 
   app.get('/favicon.ico', ({}, res) => res.status(404).end());
@@ -95,6 +96,32 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
     )
     return res.send(pageTemplate.replace('{{{body}}}', bodyHtml));
   })
+
+  app.get('/stats', async (req, res) => {
+    const metrics = {
+      'Unique Mugshots': (Object.values(await knex('mugshot_hashes').first().count('hash'))[0] as number) - 1, // Subtract 1 to account for the "blank" image
+      'Unique Names': (await knex('raw_records').select('name').distinct('name')).length
+    }
+    const bodyHtml = renderToStaticMarkup(
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(metrics).map(k => (
+            <tr key={k}>
+              <td>{k}</td>
+              <td>{metrics[k]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    )
+    return res.send(pageTemplate.replace('{{{body}}}', bodyHtml));
+  })
   
   app.get('/*', async (req, res, next) => {
     const batches = await rawRecords.getBatches(10);
@@ -122,6 +149,9 @@ const templateBody = renderToStaticMarkup(
           <Nav navbar>
             <NavItem>
               <NavLink href="/batch-list">Batch List</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href="/stats">Stats</NavLink>
             </NavItem>
           </Nav>
         </Navbar>
