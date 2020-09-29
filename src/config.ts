@@ -8,4 +8,8 @@ export default {
     enabled: (process.env['HTTP_ENABLED'] || 'true').trim().toLowerCase() === 'true',
     port: Number(process.env['HTTP_PORT'] || 3000),
   },
+  ackee: {
+    endpoint: process.env['ACKEE_ENDPOINT'],
+    domain_id: process.env['ACKEE_DOMAIN_ID']
+  }
 }

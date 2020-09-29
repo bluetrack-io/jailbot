@@ -133,6 +133,9 @@ const templateBody = renderToStaticMarkup(
   </Container>
 )
 
+import config from './config';
+const trackingHtml = `<script async src="${config.ackee.endpoint}/tracker.js" data-ackee-server="${config.ackee.endpoint}" data-ackee-domain-id="${config.ackee.domain_id}"></script>`;
+
 const pageTemplate = `
 <!DOCTYPE html>
 <html>
@@ -140,6 +143,7 @@ const pageTemplate = `
   <title>Jailbot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  ${ config.ackee.endpoint && config.ackee.domain_id ? trackingHtml : '' }
 </head>
 <body>
   ${templateBody}
