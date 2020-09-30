@@ -9,7 +9,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: jailbot
-        image: bluetrack/jailbot:latest
+        image: bluetrack/jailbot:stable
         imagePullPolicy: Always
         env:
         - name: HTTP_ENABLED
