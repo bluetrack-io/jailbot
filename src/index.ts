@@ -1,5 +1,6 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
+import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
 import { Server } from 'http';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
@@ -46,6 +47,30 @@ const shutdown = async (server?:Server) => {
 
 // Begin main app execution
 Promise.resolve()
+.then(async () => {
+  // When running with ts-node then the migrations will have .ts extensions instead of .js
+  // If you try to run dev mode against a prod db, it will throw an error because of this difference
+
+  // Do nothing if not using ts-node
+  if(!process[Symbol.for('ts-node.register.instance')]){
+    return;
+  }
+  // Do nothing if not dev mode or knex_migrations table does not exist
+  if(!config.dev_mode || !(await knex.schema.hasTable('knex_migrations')) ){
+    return;
+  }
+  // Find .js migrations (if any)
+  const jsMigrations = (await knex('knex_migrations').select('name').where('name','like','%.js')).map(r => r.name)
+  if(jsMigrations.length == 0){
+    return;
+  }
+  console.log(`${jsMigrations.length} js migrations to be modified`)
+  await Bluebird.mapSeries(
+    jsMigrations.map(oldName=>({oldName,newName:oldName.replace('.js','.ts')})),
+    set => knex('knex_migrations').update('name',set.newName).where('name',set.oldName)
+  )
+  console.log('Finished changing migration extensions')
+})
 .then(() => knex.migrate.latest())
 .catch(err => {
   console.error('FATAL:', err);
