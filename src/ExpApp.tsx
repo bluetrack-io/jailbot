@@ -53,12 +53,15 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
     // If a non-number is provided, it will use 1. If a value <= 0 is provided, it will also use 1
     const listPage = isNaN(queryPage) ? 1 : ( queryPage > 0 ? queryPage : 1 );
     const batches = await rawRecords.getBatches(pageSize, ((listPage - 1) * pageSize));
+    const totalBatches = Object.values(await knex('batches').count('id').first())[0] as number
+    const maxPage = Math.ceil(totalBatches / pageSize) || 1
 
     const bodyHtml = renderToStaticMarkup(
       <div>
         <a href={[req.path, Querystring.stringify({...req.query,page:listPage - 1})].join('?')}><Button disabled={listPage==1}>Previous Page</Button></a>
-        <a href={[req.path, Querystring.stringify({...req.query,page:listPage + 1})].join('?')}><Button disabled={batches.length < pageSize}>Next Page</Button></a>
+        <a href={[req.path, Querystring.stringify({...req.query,page:listPage + 1})].join('?')}><Button disabled={listPage >= maxPage}>Next Page</Button></a>
         <br/>
+        Page <form style={{display:'inline-block'}}><input type="number" name="page" defaultValue={listPage} min={1} max={maxPage}/></form> / {maxPage}
         <Table striped bordered responsive>
           <thead>
             <tr><th>Batch Time</th></tr>
