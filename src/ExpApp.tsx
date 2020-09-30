@@ -103,23 +103,38 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
       'Unique Mugshots': (Object.values(await knex('mugshot_hashes').first().count('hash'))[0] as number) - 1, // Subtract 1 to account for the "blank" image
       'Unique Names': (await knex('raw_records').select('name').distinct('name')).length
     }
+
+    // Gets a list of the distinct, non-empty charges, sorted alphabetically
+    const charges: string[] = (await(knex('raw_records').distinct('charges').orderBy('charges')))
+      .map(d => d['charges'].trim())
+      .filter(c => Boolean(c))
+    
     const bodyHtml = renderToStaticMarkup(
-      <Table striped bordered>
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(metrics).map(k => (
-            <tr key={k}>
-              <td>{k}</td>
-              <td>{metrics[k]}</td>
+      <div>
+        <Table striped bordered>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Value</th>
             </tr>
+          </thead>
+          <tbody>
+            {Object.keys(metrics).map(k => (
+              <tr key={k}>
+                <td>{k}</td>
+                <td>{metrics[k]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <hr/>
+        <h4>Distinct charges</h4>
+        <ul>
+          {charges.map((c,i) => (
+            <li key={i}>{c}</li>
           ))}
-        </tbody>
-      </Table>
+        </ul>
+      </div>
     )
     return res.send(pageTemplate.replace('{{{body}}}', bodyHtml));
   })
