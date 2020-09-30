@@ -143,9 +143,9 @@ export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords
     const batches = await rawRecords.getBatches(10);
     const bodyHtml = renderToStaticMarkup(
       <div>
-        Last updated: {batches[0].time.toLocaleString()}
+        Last updated: { batches.length == 0 ? 'N/A' : batches[0].time.toLocaleString()}
         <br/>
-        <a href={`/batch/${batches[0].batch_id}`}>Most Recent Batch</a>
+        { batches.length == 0 ? null : <a href={`/batch/${batches[0].batch_id}`}>Most Recent Batch</a> }
       </div>
     )
     return res.send(pageTemplate.replace('{{{body}}}', bodyHtml));
