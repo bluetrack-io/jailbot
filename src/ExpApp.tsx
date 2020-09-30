@@ -154,6 +154,9 @@ const templateBody = renderToStaticMarkup(
             <NavItem>
               <NavLink href="/stats">Stats</NavLink>
             </NavItem>
+            <NavItem>
+              <NavLink href="https://github.com/bluetrack-io/jailbot"><i className="fa fa-github fa-4" aria-hidden="true"></i> Github</NavLink>
+            </NavItem>
           </Nav>
         </Navbar>
       </Col>
@@ -171,6 +174,7 @@ const pageTemplate = `
   <title>Jailbot</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   ${renderToStaticMarkup(<AckeeEmbed {...config.ackee}/>)}
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-179306626-1"></script>
