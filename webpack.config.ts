@@ -2,8 +2,8 @@ import { Configuration } from 'webpack';
 import * as HtmlWebpackPlugin from 'html-webpack-plugin';
 import * as Path from 'path';
 
-const SRC_DIR = Path.resolve(__dirname,'src-client');
-const OUT_DIR = Path.resolve(__dirname,'dist');
+const SRC_DIR = Path.resolve(__dirname,'src/client');
+const OUT_DIR = Path.resolve(__dirname,'dist/client');
 
 export const config: Configuration = {
   mode: 'development',

@@ -15,4 +15,4 @@ USER node
 ENV NODE_ENV production
 ENV DATA_DIR /data
 
-CMD ["node", "dist"]
+CMD ["node", "dist/server"]
