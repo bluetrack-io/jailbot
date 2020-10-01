@@ -2,10 +2,11 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
-import { Server } from 'http';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
-import * as Prom from 'prom-client';
-import ExpApp from './ExpApp';
+import { Server } from 'http';
+import * as Express from 'express';
+import AppApi from './api';
+import * as Cheerio from 'cheerio';
 import config from './config';
 import { RawRecordProviderI } from './interfaces';
 import { saveCurrentInmateRecords } from './utils';
@@ -80,11 +81,52 @@ Promise.resolve()
   const rawRecords: RawRecordProviderI = new KnexRawRecordProvider(knex);
 
   if(config.http.enabled){
+    const app = Express();
+    app.use('/api/v1', AppApi(knex));
+    app.get('/favicon.ico', ({}, res) => res.status(404).end());
+
+    app.get('/mugshot/:mugshotId', async (req, res) => {
+      const mugshotHash = req.params['mugshotId'];
+      const mugData = await rawRecords.getMugshotData(mugshotHash);
+      if(!mugData){
+        return res.status(404).end();
+      }
+      const imgTag = Cheerio.load(mugData);
+      const imgSrc:string = imgTag('img').prop('src');
+      // Check if src is a data URI
+      if(typeof imgSrc !== 'string' || imgSrc.indexOf('data:') !== 0){
+        // If not, return nothing
+        return res.status(404).end();
+      }
+      const splitData = imgSrc.substr(5).split(';');
+      const mimeType = splitData[0];
+      const b64Data = splitData[1].substr(7); // Remove "base64," prefix 
+      const imgBuff = Buffer.from(b64Data, 'base64');
+      return res.writeHead(200, {
+        'Content-Type': mimeType,
+        'Content-Length': imgBuff.length,
+        'Cache-control': 'public, max-age=31536000, immutable', // The content is dependent on the hash, so an eternal cache is fine
+      })
+      .end(imgBuff);
+    })
+
+    if(!config.dev_mode){
+      app.get('/download-database', ({}, res) => {
+        return res.download(Path.resolve(config.data_dir, 'db.sqlite'), 'jailbot.sqlite');
+      })
+      const STATIC_DIR = Path.resolve(__dirname,'../client')
+      console.log('Serving static assets from', STATIC_DIR);
+      app.use(Express.static(STATIC_DIR));
+      app.get('/*', (req, res, next) => {
+        if(!req.accepts('html')){
+          return next();
+        }
+        return res.contentType('html').sendFile(Path.resolve(STATIC_DIR,'index.html'));
+      })
+    }
     console.log('Starting HTTP server');
-    Prom.collectDefaultMetrics()
-    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords, knex);
     const server = app.listen(config.http.port, () => {
-      console.log('Server listening on', config.http.port);
+      console.log('Server listening on port', config.http.port);
       if(!config.dev_mode && config.batch_interval_seconds > 0){
         runBatch(rawRecords).then(() => (
           setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
