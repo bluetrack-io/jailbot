@@ -111,6 +111,9 @@ Promise.resolve()
     })
 
     if(!config.dev_mode){
+      app.get('/download-database', ({}, res) => {
+        return res.download(Path.resolve(config.data_dir, 'db.sqlite'), 'jailbot.sqlite');
+      })
       const STATIC_DIR = Path.resolve(__dirname,'../client')
       console.log('Serving static assets from', STATIC_DIR);
       app.use(Express.static(STATIC_DIR));
