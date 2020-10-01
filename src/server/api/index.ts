@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as Knex from 'knex';
-import { BatchMeta, BatchData, InmateRecord } from '../../shared';
+import { BatchMeta, BatchData, InmateRecord, SystemSummaryStats } from '../../shared';
 
 export default function ApiRouter(knex:Knex){
   const api = Router();
@@ -48,6 +48,19 @@ export default function ApiRouter(knex:Knex){
         records: batchRecords
       }
       return res.send(batchData);
+    })
+  
+  api.route('/stats')
+    .get(async (req,res,next) => {
+      const stats: SystemSummaryStats = {
+        "Unique Mugshots": (Object.values(await knex('mugshot_hashes').first().count('hash'))[0] as number),
+        "Unique Names": (await knex('raw_records').select('name').distinct('name')).length,
+        "Unique Charges": (await(knex('raw_records').distinct('charges').orderBy('charges')))
+        .map(d => d['charges'].trim())
+        .filter(c => Boolean(c))
+        .length
+      }
+      return res.send(stats)
     })
 
   return api;

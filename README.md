@@ -6,6 +6,20 @@ there are questions about various stats that result from the data published ther
 
 This project seeks to facilitate the scraping, archiving and querying of this data for information over time.
 
+## Structure
+This app is split into two major components, _client_ and _server_.
+
+Client is a React-powered single-page application. Server is a Node/Express runtime.
+
+### Server
+Server has 3 main functions
+1. Maintain the database
+    - Runs migration scripts to build/modify tables (uses knex.js)
+2. Create and save "batches" at regular intervals
+    - a "batch" is a single scrape of the upstream website
+    - it runs in the same runtime as the API server
+3. Accept and respond to API requests
+
 ## Building
 This project is intended to be run as a Docker container.
 To build it you can run:

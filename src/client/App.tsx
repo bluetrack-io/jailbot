@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router';
 import { Container, Row, Col } from 'reactstrap';
-import { AppNav, BatchList, BatchView } from './ui';
+import { AppNav, BatchList, BatchView, SystemStats } from './ui';
 import { AxiosInstance } from 'axios';
 import * as PathRegex from 'path-to-regexp';
 
@@ -38,9 +38,7 @@ export const App: React.FunctionComponent<{client:AxiosInstance}> = (props) => {
 
             <Route path="/batch/:batchId" component={withApiData('/v1/batch/:batchId', BatchView)}/>
 
-            <Route path="/stats">
-              This page is currently unavailable
-            </Route>
+            <Route path="/stats" component={withApiData('/v1/stats',SystemStats)}/>
 
             <Route exact path="/">
               This app scrapes the <a href="https://athena.dentonpolice.com/jailview/JailView.aspx">Denton PD Jail website</a> at

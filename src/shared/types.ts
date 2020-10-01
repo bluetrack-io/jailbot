@@ -25,3 +25,9 @@ export type InmateRecord = {
 
   mugshot_id: string;
 }
+
+export type SystemSummaryStats = {
+  "Unique Names": number;
+  "Unique Mugshots": number;
+  "Unique Charges": number;
+}
