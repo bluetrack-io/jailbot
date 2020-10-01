@@ -2,14 +2,15 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
-import { Server } from 'http';
 import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
-import * as Prom from 'prom-client';
-import ExpApp from './ExpApp';
+import { Server } from 'http';
+import * as Express from 'express';
+import AppApi from './api';
 import config from './config';
 import { RawRecordProviderI } from './interfaces';
 import { saveCurrentInmateRecords } from './utils';
 import { KnexRawRecordProvider } from './entities';
+import { AppNav } from '../client/ui';
 
 // Ensure the data dir exists
 if(!Fs.existsSync(config.data_dir)){
@@ -80,11 +81,12 @@ Promise.resolve()
   const rawRecords: RawRecordProviderI = new KnexRawRecordProvider(knex);
 
   if(config.http.enabled){
+    const app = Express();
+    app.use('/api/v1', AppApi(knex));
+    app.get('/favicon.ico', ({}, res) => res.status(404).end());
     console.log('Starting HTTP server');
-    Prom.collectDefaultMetrics()
-    const app = ExpApp(Path.resolve(config.data_dir, 'db.sqlite'), Prom.register, rawRecords, knex);
     const server = app.listen(config.http.port, () => {
-      console.log('Server listening on', config.http.port);
+      console.log('Server listening on port', config.http.port);
       if(!config.dev_mode && config.batch_interval_seconds > 0){
         runBatch(rawRecords).then(() => (
           setInterval(() => runBatch(rawRecords), config.batch_interval_seconds * 1000)
