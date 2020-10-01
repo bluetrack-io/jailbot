@@ -36,7 +36,8 @@ export const config: Configuration = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Jailbot',
-      hash: true
+      hash: true,
+      template: Path.resolve(SRC_DIR, 'template.html')
     }),
   ],
 };
