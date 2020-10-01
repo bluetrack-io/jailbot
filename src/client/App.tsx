@@ -39,11 +39,17 @@ export const App: React.FunctionComponent<{client:AxiosInstance}> = (props) => {
             <Route path="/batch/:batchId" component={withApiData('/v1/batch/:batchId', BatchView)}/>
 
             <Route path="/stats">
-              Stats page
+              This page is currently unavailable
             </Route>
 
             <Route exact path="/">
-              Root page
+              This app scrapes the <a href="https://athena.dentonpolice.com/jailview/JailView.aspx">Denton PD Jail website</a> at
+              regular intervals and stores the information for archival and analytical purposes.
+              <br/><br/>
+              Each time the site is scraped, a new "batch" is created. You can view all the batches by clicking "Batch List" at the top
+              of this page.
+              <hr/>
+              This project is open-source. You are encouraged to contribute on <a href="http://github.com/bluetrack-io/jailbot">Github</a>!
             </Route>
             
             <Redirect to="/"/>
