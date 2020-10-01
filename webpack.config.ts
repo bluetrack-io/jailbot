@@ -32,7 +32,10 @@ export const config: Configuration = {
     historyApiFallback: true,
     compress: true,
     port: 3030,
-    proxy: {},
+    proxy: {
+      '/api': 'http://localhost:3000',
+      '/mugshot': 'http://localhost:3000'
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({

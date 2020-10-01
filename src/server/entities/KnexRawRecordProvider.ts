@@ -4,7 +4,6 @@ import { BatchMetadata, RawInmateRecord, StoredInmateRecord } from '../types';
 import { v4 as uuid4 } from 'uuid';
 import { stringSha256Sum } from '../utils';
 import * as Bluebird from 'bluebird';
-import { off } from 'process';
 
 export class KnexRawRecordProvider implements RawRecordProviderI {
   private readonly knex: Knex;

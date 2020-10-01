@@ -6,11 +6,11 @@ import { FsMigrations } from 'knex/lib/migrate/sources/fs-migrations';
 import { Server } from 'http';
 import * as Express from 'express';
 import AppApi from './api';
+import * as Cheerio from 'cheerio';
 import config from './config';
 import { RawRecordProviderI } from './interfaces';
 import { saveCurrentInmateRecords } from './utils';
 import { KnexRawRecordProvider } from './entities';
-import { AppNav } from '../client/ui';
 
 // Ensure the data dir exists
 if(!Fs.existsSync(config.data_dir)){
@@ -84,6 +84,43 @@ Promise.resolve()
     const app = Express();
     app.use('/api/v1', AppApi(knex));
     app.get('/favicon.ico', ({}, res) => res.status(404).end());
+
+    app.get('/mugshot/:mugshotId', async (req, res) => {
+      const mugshotHash = req.params['mugshotId'];
+      const mugData = await rawRecords.getMugshotData(mugshotHash);
+      if(!mugData){
+        return res.status(404).end();
+      }
+      const imgTag = Cheerio.load(mugData);
+      const imgSrc:string = imgTag('img').prop('src');
+      // Check if src is a data URI
+      if(typeof imgSrc !== 'string' || imgSrc.indexOf('data:') !== 0){
+        // If not, return nothing
+        return res.status(404).end();
+      }
+      const splitData = imgSrc.substr(5).split(';');
+      const mimeType = splitData[0];
+      const b64Data = splitData[1].substr(7); // Remove "base64," prefix 
+      const imgBuff = Buffer.from(b64Data, 'base64');
+      return res.writeHead(200, {
+        'Content-Type': mimeType,
+        'Content-Length': imgBuff.length,
+        'Cache-control': 'public, max-age=31536000, immutable', // The content is dependent on the hash, so an eternal cache is fine
+      })
+      .end(imgBuff);
+    })
+
+    if(!config.dev_mode){
+      const STATIC_DIR = Path.resolve(__dirname,'../client')
+      console.log('Serving static assets from', STATIC_DIR);
+      app.use(Express.static(STATIC_DIR));
+      app.get('/*', (req, res, next) => {
+        if(!req.accepts('html')){
+          return next();
+        }
+        return res.contentType('html').sendFile(Path.resolve(STATIC_DIR,'index.html'));
+      })
+    }
     console.log('Starting HTTP server');
     const server = app.listen(config.http.port, () => {
       console.log('Server listening on port', config.http.port);

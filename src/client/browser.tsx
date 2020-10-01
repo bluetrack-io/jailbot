@@ -7,7 +7,7 @@ import { v4 as uuid4 } from 'uuid';
 import Axios from 'axios';
 
 const client = Axios.create({
-  baseURL: 'http://localhost:3000/api'
+  baseURL: '/api'
 })
 
 window['getStuff'] = async () => {

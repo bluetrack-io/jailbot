@@ -13,7 +13,6 @@ export const BatchView: React.FunctionComponent<BatchViewProps> = ({data}) => {
     'amount': 'Bond Total',
     'charges': 'Charges',
   };
-  // TODO fix mugshot path
   return (
     <div>
       <Col xs={12}>Inmates Booked: {data.records.length}</Col>
@@ -25,7 +24,7 @@ export const BatchView: React.FunctionComponent<BatchViewProps> = ({data}) => {
               <CardSubtitle>Booked @ <span style={{fontStyle:'italic'}}>{r.datetimebooked}</span></CardSubtitle>
               <Row>
                 <Col xs={12} sm={2}>
-                  <img style={{maxWidth:'100%'}} src={`#`} alt="Mugshot"/>
+                  <img style={{maxWidth:'100%'}} src={`/mugshot/${r.mugshot_id}`} alt="Mugshot"/>
                 </Col>
                 <Col xs={12} sm={10}>
                   <ul>
