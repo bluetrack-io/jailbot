@@ -4,6 +4,15 @@ import { BrowserRouter, withRouter } from 'react-router-dom';
 import App from './App';
 import { ApiClientI } from './interfaces';
 import { v4 as uuid4 } from 'uuid';
+import Axios from 'axios';
+
+const client = Axios.create({
+  baseURL: 'http://localhost:3000/api'
+})
+
+window['getStuff'] = async () => {
+  return client.get('/v1/batches').then(r=>r.data)
+}
 
 const mockBatches = new Array(10).fill(null)
   .map(() => ({
@@ -25,7 +34,7 @@ document.body.appendChild(appTarget);
 
 render(
   <BrowserRouter>
-    <App/>
+    <App client={client}/>
   </BrowserRouter>
   ,appTarget
 )

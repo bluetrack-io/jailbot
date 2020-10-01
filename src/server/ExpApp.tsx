@@ -9,9 +9,15 @@ import { Container, Row, Col, Button, Table } from 'reactstrap';
 import * as Cheerio from 'cheerio';
 import { AckeeEmbed, InmateCard } from './ui';
 import { RawRecordProviderI } from './interfaces';
+import AppApi from './api';
 
 export default function ExpApp(sqliteFilepath:string, prom: Registry, rawRecords:RawRecordProviderI, knex:Knex): Express.Application {
   const app = Express();
+  app.use(({}, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin','*');
+    return next();
+  })
+  app.use('/api/v1', AppApi(knex));
 
   app.get('/favicon.ico', ({}, res) => res.status(404).end());
 

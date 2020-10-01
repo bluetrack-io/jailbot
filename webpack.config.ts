@@ -12,6 +12,7 @@ export const config: Configuration = {
   ],
   output: {
     path: OUT_DIR,
+    publicPath: '/',
     filename: '[name].js',
   },
   resolve: {
@@ -30,7 +31,7 @@ export const config: Configuration = {
     contentBase: OUT_DIR,
     historyApiFallback: true,
     compress: true,
-    port: 3000,
+    port: 3030,
     proxy: {},
   },
   plugins: [
